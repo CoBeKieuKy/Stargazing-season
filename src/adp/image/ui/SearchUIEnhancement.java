@@ -7,6 +7,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.awt.*;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -54,14 +56,17 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
     private BufferedImage mainImage;
     private BufferedImage smallImage;
 
-    private Thread t;
+    private JProgressBar progressBar = new JProgressBar();
+    private Thread thread;
     /**
      * Construct an SearchUI and set it visible.
      */
     public SearchUIEnhancement() {
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE); // kill the application on closing the window
+        progressBar.setSize(400,30);
 
         final JPanel mainFilePanel = new JPanel( new BorderLayout());
+        mainFilePanel.setSize(900,600);
         mainFilePanel.add( this.openBigButton, BorderLayout.WEST);
         mainFilePanel.add( this.mainFilenameLabel, BorderLayout.CENTER);
 
@@ -80,9 +85,9 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
         final JPanel bottomPanel = new JPanel( new BorderLayout());
         bottomPanel.add( this.outputLabel, BorderLayout.CENTER);
         bottomPanel.add( this.startButton, BorderLayout.SOUTH);
+        bottomPanel.add( this.progressBar, BorderLayout.WEST);
 
         final JPanel mainPanel = new JPanel( new BorderLayout());
-
         mainPanel.add( topPanel, BorderLayout.NORTH);
         mainPanel.add( imagePanel, BorderLayout.CENTER);
         mainPanel.add( bottomPanel, BorderLayout.SOUTH);
@@ -138,6 +143,7 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
         this.chooser.setFileSelectionMode( JFileChooser.FILES_ONLY);
         this.chooser.setCurrentDirectory( new File( "."));
 
+        progressBar.setValue(0);
         add( mainPanel);
         pack();
         setVisible( true);
@@ -150,9 +156,9 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
 //        this.searcher = new NewBasicSearcher( mainImage, smallImage, this);
 //        this.outputLabel.setText("information");
 //        this.searcher.start();
-        this.t = new NewBasicSearcher( mainImage, smallImage, this);
+        this.thread = new NewBasicSearcher( mainImage, smallImage, this);
         this.outputLabel.setText("information");
-        this.t.start();
+        this.thread.start();
     }
 
     /**
@@ -177,13 +183,19 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
         int h = smallImage.getHeight();
         Rectangle r = new Rectangle( x, y, w, h);
         mainImagePanel.addHighlight(r);
+
     }
 
     @Override
     public void update( final int position, final long elapsedTime, final long positionsTriedSoFar) {
         int x = position % mainImage.getWidth();
         int y = position / mainImage.getWidth();
+        int estimate_times = mainImage.getWidth()*mainImage.getHeight();
         this.outputLabel.setText( "Update at: [" + x + "," + y  + "] at " + (elapsedTime / 1000.0) + "s (" + positionsTriedSoFar + " positions attempted)\n");
+        progressBar.setValue((int)positionsTriedSoFar*100/estimate_times);
+        Integer percent =  (int) positionsTriedSoFar*100/estimate_times;
+        String percent1 = percent.toString();
+//        progressBar.setString(percent1 + "%");
     }
 
 
