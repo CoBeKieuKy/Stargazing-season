@@ -143,10 +143,21 @@ public class SearchUI extends JFrame implements SearchListener {
 		setVisible( true);
 	}
 
+	private void addActionListenerStartButton(){
+		startButton.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed( final ActionEvent ev) {
+				runSearch();
+			}
+		});
+	}
 	/**
 	 * Clears output label and runs the search by calling {@link Searcher#runSearch(SearchListener)}.
 	 */
 	private void runSearch() {
+		for (ActionListener al : startButton.getActionListeners()) {
+			startButton.removeActionListener(al);
+		}
 		this.searcher = new BasicSearcher( mainImage, smallImage);
 		this.outputLabel.setText("information");
 		this.searcher.runSearch( this);
@@ -181,6 +192,7 @@ public class SearchUI extends JFrame implements SearchListener {
 		int x = position % mainImage.getWidth();
 		int y = position / mainImage.getWidth();
 		this.outputLabel.setText( "Update at: [" + x + "," + y  + "] at " + (elapsedTime / 1000.0) + "s (" + positionsTriedSoFar + " positions attempted)\n");
+
 	}
 
 

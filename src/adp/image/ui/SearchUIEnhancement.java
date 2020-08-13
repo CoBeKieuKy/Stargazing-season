@@ -144,18 +144,27 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
         this.chooser.setCurrentDirectory( new File( "."));
 
         progressBar.setValue(0);
+        progressBar.setStringPainted(true);
         add( mainPanel);
         pack();
         setVisible( true);
     }
 
+    private void addActionListenerStartButton(){
+        startButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( final ActionEvent ev) {
+                runSearch();
+            }
+        });
+    }
     /**
      * Clears output label and runs the search by calling {@link Searcher#runSearch(SearchListener)}.
      */
     private void runSearch() {
-//        this.searcher = new NewBasicSearcher( mainImage, smallImage, this);
-//        this.outputLabel.setText("information");
-//        this.searcher.start();
+        for (ActionListener al : startButton.getActionListeners()) {
+            startButton.removeActionListener(al);
+        }
         this.thread = new NewBasicSearcher( mainImage, smallImage, this);
         this.outputLabel.setText("information");
         this.thread.start();
@@ -192,10 +201,15 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
         int y = position / mainImage.getWidth();
         int estimate_times = mainImage.getWidth()*mainImage.getHeight();
         this.outputLabel.setText( "Update at: [" + x + "," + y  + "] at " + (elapsedTime / 1000.0) + "s (" + positionsTriedSoFar + " positions attempted)\n");
-        progressBar.setValue((int)positionsTriedSoFar*100/estimate_times);
-        Integer percent =  (int) positionsTriedSoFar*100/estimate_times;
-        String percent1 = percent.toString();
-//        progressBar.setString(percent1 + "%");
+        float percent = (float)  positionsTriedSoFar*100/estimate_times;
+        if (percent>99.5){
+            percent =100;
+        }
+        progressBar.setValue((int) percent);
+
+        if (percent==100){
+            addActionListenerStartButton();
+        }
     }
 
 
