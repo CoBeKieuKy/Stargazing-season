@@ -50,6 +50,7 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
     private final JFileChooser chooser = new JFileChooser();
 
     private final JLabel outputLabel = new JLabel( "information");
+    private final JLabel outputLabel2 = new JLabel("points");
     private final JButton startButton = new JButton( "Start");
 
     private Searcher searcher;
@@ -87,6 +88,7 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
 
         final JPanel bottomPanel = new JPanel( new BorderLayout());
         bottomPanel.add( this.outputLabel, BorderLayout.CENTER);
+        bottomPanel.add(this.outputLabel2, BorderLayout.EAST);
         bottomPanel.add( this.startButton, BorderLayout.SOUTH);
         bottomPanel.add( this.progressBar, BorderLayout.WEST);
 
@@ -172,8 +174,9 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
         //Advanced Search
         AdvancedSearcher mainTask = new AdvancedSearcher(mainImage, smallImage,
                 0, (mainImage.getWidth() * mainImage.getHeight()),this);
-        pool.invoke(mainTask);
+        Integer allpoint = pool.invoke(mainTask);
         pool.shutdown();
+        this.outputLabel2.setText("Have checked through: "+allpoint+" points\n");
     }
 
     /**
@@ -248,7 +251,6 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
             Dimension d = new Dimension(
                     (int)Math.ceil(image.getWidth() * scale),
                     (int)Math.ceil(image.getHeight() * scale));
-            //System.out.println( d);
             setPreferredSize( d);
 
             invalidate();
@@ -286,7 +288,6 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
                                 (int)(r.width * scale),
                                 (int)(r.height * scale));
                         ((Graphics2D) g).draw( s);
-                        //System.out.println( r + " >> " + s);
                     }
                 }
             }

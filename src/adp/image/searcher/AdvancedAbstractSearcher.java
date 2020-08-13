@@ -5,8 +5,9 @@ import adp.image.jar.Searcher;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.RecursiveTask;
 
-public class AdvancedAbstractSearcher extends RecursiveAction implements Searcher {
+public class AdvancedAbstractSearcher extends RecursiveTask<Integer> implements Searcher {
 
     private final BufferedImage image1;
     private final BufferedImage image2;
@@ -114,11 +115,10 @@ public class AdvancedAbstractSearcher extends RecursiveAction implements Searche
 
 
     @Override
-    protected void compute() {
-        System.out.println("run now");
-
+    protected Integer compute() {
         if ( endPosition - firstPosition < image1.getHeight() * image1.getWidth()) {
             this.runSearch(this.listener);
+            return this.counter;
 
         } else {
             int middle = endPosition / 2;
@@ -127,6 +127,7 @@ public class AdvancedAbstractSearcher extends RecursiveAction implements Searche
             AdvancedAbstractSearcher subTask2 = new AdvancedAbstractSearcher(image1, image2, middle, endPosition, this.listener);
 
             invokeAll(subTask1, subTask2);
+            return (subTask1.counter + subTask2.counter);
         }
     }
 }
