@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -27,6 +29,7 @@ import javax.swing.SwingUtilities;
 
 import adp.image.jar.Searcher;
 import adp.image.jar.Searcher.SearchListener;
+import adp.image.searcher.AdvancedSearcher;
 import adp.image.searcher.NewBasicSearcher;
 
 /**
@@ -58,6 +61,8 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
 
     private JProgressBar progressBar = new JProgressBar();
     private Thread thread;
+    ForkJoinPool pool = new ForkJoinPool();
+
     /**
      * Construct an SearchUI and set it visible.
      */
@@ -162,12 +167,34 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
      * Clears output label and runs the search by calling {@link Searcher#runSearch(SearchListener)}.
      */
     private void runSearch() {
-        for (ActionListener al : startButton.getActionListeners()) {
-            startButton.removeActionListener(al);
-        }
-        this.thread = new NewBasicSearcher( mainImage, smallImage, this);
-        this.outputLabel.setText("information");
-        this.thread.start();
+//        for (ActionListener al : startButton.getActionListeners()) {
+//            startButton.removeActionListener(al);
+//        }
+        //Basic Search
+//        this.thread = new NewBasicSearcher( mainImage, smallImage, this);
+//        this.outputLabel.setText("information");
+//        this.thread.start();
+
+        //Advanced Search
+        AdvancedSearcher part1 = new AdvancedSearcher(mainImage, smallImage,
+                0, (mainImage.getWidth() * mainImage.getHeight() /4),this);
+
+        AdvancedSearcher part2 = new AdvancedSearcher(mainImage, smallImage,
+                (mainImage.getWidth() * mainImage.getHeight() / 4 + 1),mainImage.getWidth()*mainImage.getHeight() / 2 ,this);
+
+        AdvancedSearcher part3 = new AdvancedSearcher(mainImage, smallImage,
+                (mainImage.getWidth() * mainImage.getHeight() / 2 + 1),mainImage.getWidth()*mainImage.getHeight() *3 /4 ,this);
+
+        AdvancedSearcher part4 = new AdvancedSearcher(mainImage, smallImage,
+                (mainImage.getWidth() * mainImage.getHeight() *3 / 4 + 1),mainImage.getWidth()*mainImage.getHeight() ,this);
+
+        ForkJoinTask.invokeAll(part1,part2,part3,part4);
+        do{
+            System.out.println("Running");
+        }while(!part1.isDone() || !part2.isDone() || !part3.isDone() || !part4.isDone());
+       
+        System.out.println("DONE");
+        pool.shutdown();
     }
 
     /**
