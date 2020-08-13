@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -30,14 +29,13 @@ import javax.swing.SwingUtilities;
 import adp.image.jar.Searcher;
 import adp.image.jar.Searcher.SearchListener;
 import adp.image.searcher.AdvancedSearcher;
-import adp.image.searcher.NewBasicSearcher;
 
 /**
  * This class implements a basic GUI interface for Searcher
  * implementations. This class implements SearchListener to
  * receive the Searcher's output information.
  */
-public class SearchUIEnhancement extends JFrame implements SearchListener {
+public class ParallelizedSearcherUI extends JFrame implements SearchListener {
     private static final long serialVersionUID = 1L;
 
     private final JButton openBigButton = new JButton( "Open main image");
@@ -66,7 +64,7 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
     /**
      * Construct an SearchUI and set it visible.
      */
-    public SearchUIEnhancement() {
+    public ParallelizedSearcherUI() {
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE); // kill the application on closing the window
         progressBar.setSize(400,30);
 
@@ -100,7 +98,7 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
         this.openBigButton.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed( final ActionEvent ev) {
-                if ( chooser.showOpenDialog( SearchUIEnhancement.this) == JFileChooser.APPROVE_OPTION) {
+                if ( chooser.showOpenDialog( ParallelizedSearcherUI.this) == JFileChooser.APPROVE_OPTION) {
                     File file = chooser.getSelectedFile();
                     mainFilenameLabel.setText( file.getName());
                     try {
@@ -120,7 +118,7 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
         this.openSmallButton.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed( final ActionEvent ev) {
-                if ( chooser.showOpenDialog( SearchUIEnhancement.this) == JFileChooser.APPROVE_OPTION) {
+                if ( chooser.showOpenDialog( ParallelizedSearcherUI.this) == JFileChooser.APPROVE_OPTION) {
                     File file = chooser.getSelectedFile();
                     smallFilenameLabel.setText( file.getName());
                     try {
@@ -170,10 +168,12 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
         for (ActionListener al : startButton.getActionListeners()) {
             startButton.removeActionListener(al);
         }
-        //Basic Search
-        this.thread = new NewBasicSearcher( mainImage, smallImage, this);
-        this.outputLabel.setText("information");
-        this.thread.start();
+
+        //Advanced Search
+        AdvancedSearcher mainTask = new AdvancedSearcher(mainImage, smallImage,
+                0, (mainImage.getWidth() * mainImage.getHeight()),this);
+        pool.invoke(mainTask);
+        pool.shutdown();
     }
 
     /**
@@ -220,7 +220,7 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
 
 
     private static void launch() {
-        new SearchUIEnhancement();
+        new ParallelizedSearcherUI();
 
     }
 
@@ -293,7 +293,6 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
         }
 
     }
-
 
     public static void main( final String[] args) {
         SwingUtilities.invokeLater(

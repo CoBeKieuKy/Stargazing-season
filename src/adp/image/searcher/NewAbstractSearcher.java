@@ -167,6 +167,7 @@ public abstract class NewAbstractSearcher extends Thread implements Searcher{
     }
 
     public void run(){
+        System.out.println("run the old");
         this.runSearch(this.listener);
     }
 }
