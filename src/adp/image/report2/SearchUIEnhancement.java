@@ -1,4 +1,4 @@
-package adp.image.ui;
+package adp.image.report2;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -7,7 +7,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
-import java.awt.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,10 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -31,8 +26,6 @@ import javax.swing.SwingUtilities;
 
 import adp.image.jar.Searcher;
 import adp.image.jar.Searcher.SearchListener;
-import adp.image.searcher.AdvancedSearcher;
-import adp.image.searcher.NewBasicSearcher;
 
 /**
  * This class implements a basic GUI interface for Searcher
@@ -141,7 +134,7 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
         this.cancelButton.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed( final ActionEvent ev) {
-//                executor.shutdownNow();
+                startButton.setVisible(false);
                 thread.stop();
             }
         });
@@ -182,8 +175,7 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
             startButton.removeActionListener(al);
         }
         //Basic Search
-
-        this.thread = new NewBasicSearcher( mainImage, smallImage, this);
+        this.thread = new NewBasicSearcher(mainImage, smallImage, this);
         this.outputLabel.setText("information");
         this.thread.start();
     }

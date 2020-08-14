@@ -1,10 +1,9 @@
-package adp.image.searcher;
+package adp.image.report3;
 
 import adp.image.jar.Searcher;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.RecursiveTask;
 
 public class AdvancedAbstractSearcher extends RecursiveTask<Integer> implements Searcher {

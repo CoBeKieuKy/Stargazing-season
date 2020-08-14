@@ -1,6 +1,6 @@
-package adp.image.searcher;
+package adp.image.report2;
 
-import adp.image.searcher.NewAbstractSearcher;
+import adp.image.report2.NewAbstractSearcher;
 
 import java.awt.image.BufferedImage;
 

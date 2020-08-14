@@ -1,4 +1,4 @@
-package adp.image.ui;
+package adp.image.report3;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -7,7 +7,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
-import java.awt.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,7 +27,6 @@ import javax.swing.SwingUtilities;
 
 import adp.image.jar.Searcher;
 import adp.image.jar.Searcher.SearchListener;
-import adp.image.searcher.AdvancedSearcher;
 
 /**
  * This class implements a basic GUI interface for Searcher
@@ -58,7 +56,6 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
     private BufferedImage mainImage;
     private BufferedImage smallImage;
 
-    private JProgressBar progressBar = new JProgressBar();
     private Thread thread;
     ForkJoinPool pool = new ForkJoinPool();
 
@@ -67,7 +64,7 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
      */
     public ParallelizedSearcherUI() {
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE); // kill the application on closing the window
-        progressBar.setSize(400,30);
+
 
         final JPanel mainFilePanel = new JPanel( new BorderLayout());
         mainFilePanel.setSize(900,600);
@@ -90,7 +87,6 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
         bottomPanel.add( this.outputLabel, BorderLayout.CENTER);
         bottomPanel.add(this.outputLabel2, BorderLayout.EAST);
         bottomPanel.add( this.startButton, BorderLayout.SOUTH);
-        bottomPanel.add( this.progressBar, BorderLayout.WEST);
 
         final JPanel mainPanel = new JPanel( new BorderLayout());
         mainPanel.add( topPanel, BorderLayout.NORTH);
@@ -148,8 +144,7 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
         this.chooser.setFileSelectionMode( JFileChooser.FILES_ONLY);
         this.chooser.setCurrentDirectory( new File( "."));
 
-        progressBar.setValue(0);
-        progressBar.setStringPainted(true);
+
         add( mainPanel);
         pack();
         setVisible( true);
@@ -167,14 +162,15 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
      * Clears output label and runs the search by calling {@link Searcher#runSearch(SearchListener)}.
      */
     private void runSearch() {
+        // stop start button from running another search
         for (ActionListener al : startButton.getActionListeners()) {
             startButton.removeActionListener(al);
         }
-
         //Advanced Search
         AdvancedSearcher mainTask = new AdvancedSearcher(mainImage, smallImage,
                 0, (mainImage.getWidth() * mainImage.getHeight()),this);
         Integer allpoint = pool.invoke(mainTask);
+        //delete the thread pool
         pool.shutdown();
         this.outputLabel2.setText("Have checked through: "+allpoint+" points\n");
     }
@@ -214,7 +210,6 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
         if (percent>99.5){
             percent =100;
         }
-        progressBar.setValue((int) percent);
 
         if (percent==100){
             addActionListenerStartButton();
