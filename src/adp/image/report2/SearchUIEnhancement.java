@@ -54,6 +54,7 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
     private BufferedImage mainImage;
     private BufferedImage smallImage;
 
+    //Create progress bar
     private JProgressBar progressBar = new JProgressBar();
     private Thread thread;
 
@@ -171,10 +172,12 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
      * Clears output label and runs the search by calling {@link Searcher#runSearch(SearchListener)}.
      */
     private void runSearch() {
+        //Disable startButton during searching
         for (ActionListener al : startButton.getActionListeners()) {
             startButton.removeActionListener(al);
         }
         //Basic Search
+        //Create a thread to run for searching
         this.thread = new NewBasicSearcher(mainImage, smallImage, this);
         this.outputLabel.setText("information");
         this.thread.start();
@@ -211,6 +214,8 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
         int y = position / mainImage.getWidth();
         int estimate_times = mainImage.getWidth()*mainImage.getHeight();
         this.outputLabel.setText( "Update at: [" + x + "," + y  + "] at " + (elapsedTime / 1000.0) + "s (" + positionsTriedSoFar + " positions attempted)\n");
+
+        //update percentage of the Progress Bar
         float percent = (float)  positionsTriedSoFar*100/estimate_times;
         if (percent>99.5){
             percent =100;

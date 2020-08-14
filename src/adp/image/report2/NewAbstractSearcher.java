@@ -144,7 +144,7 @@ public abstract class NewAbstractSearcher extends Thread implements Searcher{
         return distance;
 
     }
-
+    //Run the thread
     public void run(){
         this.runSearch(this.listener);
     }

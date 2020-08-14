@@ -56,7 +56,6 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
     private BufferedImage mainImage;
     private BufferedImage smallImage;
 
-    private Thread thread;
     ForkJoinPool pool = new ForkJoinPool();
 
     /**
@@ -166,13 +165,15 @@ public class ParallelizedSearcherUI extends JFrame implements SearchListener {
         for (ActionListener al : startButton.getActionListeners()) {
             startButton.removeActionListener(al);
         }
-        //Advanced Search
+        //Advanced Search, using ForkJoinPool to manage mainTask ( an object of class AdvancedSearcher
+        // which extends RecursiveTask
         AdvancedSearcher mainTask = new AdvancedSearcher(mainImage, smallImage,
                 0, (mainImage.getWidth() * mainImage.getHeight()),this);
-        Integer allpoint = pool.invoke(mainTask);
-        //delete the thread pool
+
+        //return all searched points
+        Integer all_searched_points = pool.invoke(mainTask);
         pool.shutdown();
-        this.outputLabel2.setText("Have checked through: "+allpoint+" points\n");
+        this.outputLabel2.setText("Have checked through: "+all_searched_points+" points\n");
     }
 
     /**

@@ -13,7 +13,6 @@ public class AdvancedAbstractSearcher extends RecursiveTask<Integer> implements 
     private final int firstPosition;
     private final int endPosition;
     private final SearchListener listener;
-
     private volatile int counter = 0;
     private volatile int currentPosition;
 
@@ -63,6 +62,7 @@ public class AdvancedAbstractSearcher extends RecursiveTask<Integer> implements 
         listener.information("Finished at " + ((System.currentTimeMillis() - startTime) / 1000.0) + "s\n");
     }
 
+    //A loop to searching the small image (image2)
     private int findMatch( final SearchListener listener, final long startTime) {
         while( this.counter < numberOfPositionsToTry()) {
             final boolean hit = tryPosition();
@@ -77,6 +77,7 @@ public class AdvancedAbstractSearcher extends RecursiveTask<Integer> implements 
         return -1;
     }
 
+    //Checking that image2 is found or not
     protected boolean tryPosition() {
         final int x1 = this.currentPosition % this.image1.getWidth();
         final int y1 = this.currentPosition / this.image1.getWidth();
@@ -101,6 +102,7 @@ public class AdvancedAbstractSearcher extends RecursiveTask<Integer> implements 
         return difference / count < 10; // was 5
     }
 
+    //calculate the distance of the color (RGB) OF 2 pixels
     protected double compare( final int rgb1, final int rgb2) {
         final Color c1 = new Color( rgb1);
         final Color c2 = new Color( rgb2);
@@ -115,11 +117,14 @@ public class AdvancedAbstractSearcher extends RecursiveTask<Integer> implements 
 
     @Override
     protected Integer compute() {
-        if ( endPosition - firstPosition < image1.getHeight() * image1.getWidth()) {
+        //Checking if the range of the searching points is under the number all points that need searching
+        //By other way, it means that we divide the image into 2 parts (2 subTasks) to handle compute
+        if ( endPosition - firstPosition < (image1.getWidth()*image1.getHeight()) ) {
             this.runSearch(this.listener);
             return this.counter;
 
         } else {
+            //divide mainTask into 2 subTasks and return the number of all searched points at last
             int middle = endPosition / 2;
 
             AdvancedAbstractSearcher subTask1 = new AdvancedAbstractSearcher(image1, image2, firstPosition, middle, this.listener);
