@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 
@@ -53,7 +55,7 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
 
     private final JLabel outputLabel = new JLabel( "information");
     private final JButton startButton = new JButton( "Start");
-
+    private final JButton cancelButton = new JButton("Cancel");
     private Searcher searcher;
 
     private BufferedImage mainImage;
@@ -61,7 +63,6 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
 
     private JProgressBar progressBar = new JProgressBar();
     private Thread thread;
-    ForkJoinPool pool = new ForkJoinPool();
 
     /**
      * Construct an SearchUI and set it visible.
@@ -91,6 +92,7 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
         bottomPanel.add( this.outputLabel, BorderLayout.CENTER);
         bottomPanel.add( this.startButton, BorderLayout.SOUTH);
         bottomPanel.add( this.progressBar, BorderLayout.WEST);
+        bottomPanel.add( this.cancelButton, BorderLayout.EAST);
 
         final JPanel mainPanel = new JPanel( new BorderLayout());
         mainPanel.add( topPanel, BorderLayout.NORTH);
@@ -136,6 +138,13 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
             }
         });
 
+        this.cancelButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( final ActionEvent ev) {
+//                executor.shutdownNow();
+                thread.stop();
+            }
+        });
 
         this.startButton.addActionListener( new ActionListener() {
             @Override
@@ -163,6 +172,8 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
             }
         });
     }
+
+
     /**
      * Clears output label and runs the search by calling {@link Searcher#runSearch(SearchListener)}.
      */
@@ -171,6 +182,7 @@ public class SearchUIEnhancement extends JFrame implements SearchListener {
             startButton.removeActionListener(al);
         }
         //Basic Search
+
         this.thread = new NewBasicSearcher( mainImage, smallImage, this);
         this.outputLabel.setText("information");
         this.thread.start();

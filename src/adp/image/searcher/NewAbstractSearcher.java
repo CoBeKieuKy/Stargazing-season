@@ -113,8 +113,6 @@ public abstract class NewAbstractSearcher extends Thread implements Searcher{
         double difference = 0;
         int count = 0;
 
-//		System.out.println( "Position: " + this.currentPosition);
-//		max = 0;
         for( int x2 = 0; x2 < this.image2.getWidth(); x2++) {
             if ( x1 + x2 >= this.image1.getWidth()) {
                 break;
@@ -125,49 +123,29 @@ public abstract class NewAbstractSearcher extends Thread implements Searcher{
                 }
                 final int rgb1 = this.image1.getRGB(x1 + x2, y1 + y2);
                 final int rgb2 = this.image2.getRGB(x2, y2);
-
-
-//				if ( this.currentPosition == 10) {
-//					System.out.print( (x1 + x2) + "," + (y1 + y2) + " == " + x2 + "," + y2 + " ----> ");
-//				}
-
                 final double delta = compare(rgb1, rgb2);
                 difference += delta;
                 count++;
             }
         }
-        //System.out.println( "Max: " + max);
-        //System.out.println( difference + " ,,, " + difference / count);
-        //image1.setRGB(x1, y1, 255); //(int)(difference / count));
         return difference / count < 10; // was 5
     }
 
-//private double max = 0;
 
     protected double compare( final int rgb1, final int rgb2) {
         final Color c1 = new Color( rgb1);
         final Color c2 = new Color( rgb2);
-
-//		if ( this.currentPosition == 10) {
-//			System.out.println( c1 + " == " + c2);
-//			throw new RuntimeException();
-//
-//		}
-
-
         final int dRed = Math.abs( c1.getRed() - c2.getRed());
         final int dGreen = Math.abs( c1.getGreen() - c2.getGreen());
         final int dBlue = Math.abs( c1.getBlue() - c2.getBlue());
 
         final double distance = Math.sqrt((dRed * dRed)+(dGreen * dGreen)+(dBlue * dBlue));
-//if ( distance > max) { max = distance; }
 
         return distance;
 
     }
 
     public void run(){
-        System.out.println("run the old");
         this.runSearch(this.listener);
     }
 }
